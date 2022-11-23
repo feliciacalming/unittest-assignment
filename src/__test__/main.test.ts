@@ -9,6 +9,7 @@ describe("changeTodo", () => {
     //Act
     changeTodo(todo);
     // console.log(todo);
+    //En liten kommentar till mig själv
 
     //Arrest
     expect(todo.done).toBe(!false);
