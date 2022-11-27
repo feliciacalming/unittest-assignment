@@ -3,34 +3,35 @@ import { Todo } from "./models/Todo";
 
 let todos: Todo[] = JSON.parse(localStorage.getItem("todos") || "[]");
 
-// document.getElementById("sortButton")?.addEventListener("click", () => {
-//   sortTodos(todos);
-// });
-
 export function init() {
   document.getElementById("clearTodos")?.addEventListener("click", () => {
     exports.clearTodos(todos);
   });
+
+  (document.getElementById("newTodoForm") as HTMLFormElement)?.addEventListener(
+    "submit",
+    (e: SubmitEvent) => {
+      e.preventDefault();
+
+      let todoText: string = (
+        document.getElementById("newTodoText") as HTMLInputElement
+      ).value;
+      console.log("Todos when creating", todos);
+
+      exports.createNewTodo(todoText, todos);
+    }
+  );
+
+  document.getElementById("sortButton")?.addEventListener("click", () => {
+    sortTodos(todos);
+  });
 }
-
-(document.getElementById("newTodoForm") as HTMLFormElement)?.addEventListener(
-  "submit",
-  (e: SubmitEvent) => {
-    e.preventDefault();
-
-    let todoText: string = (
-      document.getElementById("newTodoText") as HTMLInputElement
-    ).value;
-    console.log("Todos when creating", todos);
-
-    exports.createNewTodo(todoText, todos);
-  }
-);
 
 export function createNewTodo(todoText: string, todos: Todo[]) {
   let result = addTodo(todoText, todos);
 
   if (result.success) {
+    sortTodos(todos);
     exports.createHtml(todos);
   } else {
     exports.displayError(result.error, true);
@@ -85,7 +86,28 @@ export function displayError(error: string, show: boolean) {
 
 export function clearTodos(todos: Todo[]) {
   removeAllTodos(todos);
-  createHtml(todos);
+  exports.createHtml(todos);
 }
+
+export function sortTodos(todos: Todo[]) {
+  console.log("hejhej");
+  for (let i = 0; i < todos.length; i++) {
+    if (todos[i].done === true) {
+      let newTodo = new Todo(todos[i].text, true);
+      let doneTodo = todos.splice(i, 1);
+      todos.push(newTodo);
+      createHtml(todos);
+      //       console.log(todos);
+      //       return todos;
+      //       todos.push(newTodo);
+      //       console.log(todos);
+      //       // console.log("Ny todo", newTodo.text);
+      //       createHtml(todos);
+      //       // console.log("test igen", todos);
+    }
+  }
+}
+
+init();
 
 // createHtml(todos);

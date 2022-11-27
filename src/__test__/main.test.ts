@@ -5,76 +5,28 @@
 import * as functions from "../ts/main";
 import * as functions2 from "../ts/functions";
 import { Todo } from "../ts/models/Todo";
-// import { expect, describe, test } from "@jest/globals";
+import { expect, describe, test, jest, beforeEach } from "@jest/globals";
 import { addTodo, changeTodo } from "../ts/functions";
 
-//clearTodos kör removeAllTodos och sen createHtml
-//så den tömmer själva listan [ ] och skriver sen ut html
-//så att den synliga listan på skärmen töms
-describe("clearTodos", () => {
-  test("should empty todosContainers' inner.html", () => {
-    //Arrange
-    let todos: Todo[] = [new Todo("plugga", false), new Todo("städa", false)];
-    document.body.innerHTML = `<ul id="todos" class="todo"></ul>`;
-    let todoContainer = document.getElementById("todos");
+console.log("hej");
 
-    functions.createHtml(todos);
-    console.log(todoContainer?.innerHTML);
+describe("clearTodos", () => {
+  test("should call function removeAllTodos", () => {
+    //Arrange
+    let spy = jest.spyOn(functions2, "removeAllTodos");
+    let todos: Todo[] = [];
+    document.body.innerHTML = `<ul id="todos" class="todo"></ul>`;
 
     //Act
     functions.clearTodos(todos);
 
     //Assert
-    expect(todoContainer?.innerHTML).toBe("");
-  });
-});
-
-test("should be able to click", () => {
-  //Arrange
-  let spy = jest.spyOn(functions, "clearTodos").mockReturnValue();
-  document.body.innerHTML = `<button type="button" id="clearTodos">Rensa lista<button>`;
-  functions.init();
-
-  //Act
-  document.getElementById("clearTodos")?.click();
-
-  //Assert
-  expect(spy).toHaveBeenCalled();
-});
-
-describe("changeTodo", () => {
-  test("should change boolean value from false to true", () => {
-    //Arrange
-    let todo = new Todo("handla", false);
-
-    //Act
-    changeTodo(todo);
-
-    //Assert
-    expect(todo.done).toBe(true);
-  });
-
-  test("should change boolean value from true to false", () => {
-    //Arrange
-    let todo = new Todo("handla", true);
-
-    //Act
-    changeTodo(todo);
-
-    //Assert
-    expect(todo.done).toBe(false);
+    expect(spy).toHaveBeenCalled();
   });
 });
 
 describe("displayError", () => {
-  test("should add innerHTML to error-div", () => {
-    //Arrange
-    //createNewTodo anropar displayError och skickar med(result.error, true)
-    //result är av IAddresponse, och är hela addTodo(todoText, todos)
-    //så om det är mindre än två bokstäver visas errormsg
-    //error = result.error, show = true
-    //Arrange
-
+  test("should add class 'show' to div", () => {
     document.body.innerHTML = `<div id="error" class="error"></div>`;
     let error: string = "errormsg";
     let show: boolean = true;
@@ -83,8 +35,28 @@ describe("displayError", () => {
     functions.displayError(error, show);
 
     //Assert
-    expect((document.getElementById("error") as HTMLDivElement).innerHTML).toBe(
-      "errormsg"
+    expect(
+      (document.getElementById("error") as HTMLDivElement).classList.length
+    ).toBe(2);
+    expect((document.getElementById("error") as HTMLDivElement).className).toBe(
+      "error show"
+    );
+  });
+
+  test("should remove class 'show' from div", () => {
+    document.body.innerHTML = `<div id="error" class="error"></div>`;
+    let error: string = "errormsg";
+    let show: boolean = false;
+
+    //Act
+    functions.displayError(error, show);
+
+    //Assert
+    expect(
+      (document.getElementById("error") as HTMLDivElement).classList.length
+    ).toBe(1);
+    expect((document.getElementById("error") as HTMLDivElement).className).toBe(
+      "error"
     );
   });
 });
@@ -136,5 +108,105 @@ describe("toggleTodo", () => {
 
     //Assert
     expect(spyOne).toHaveBeenCalled();
+  });
+});
+
+describe("createHtml", () => {
+  beforeEach(() => {
+    jest.resetModules();
+    jest.resetAllMocks();
+  });
+  test("should set item in localstorage", () => {
+    //Arrange
+    let todos: Todo[] = JSON.parse(localStorage.getItem("todos") || "[]");
+    todos.push(new Todo("bli klar med inlämningsuppgiften", false));
+    // let list: Todo[] = [
+    //   new Todo("köpa mat", false),
+    //   new Todo("städa kök", false),
+    // ];
+
+    //Act
+    functions.createHtml(todos);
+    console.log("Nu e den " + localStorage.length);
+
+    //Assert
+    expect(localStorage.length).toBeGreaterThan(0);
+  });
+
+  // test("should empty innerhtml in container", () => {
+  //   //Arrange
+  //   document.body.innerHTML = ``;
+  //   //Act
+  //   //Assert
+  // });
+
+  test("should create HTML-elements", () => {
+    //Arrange
+    let todos: Todo[] = [new Todo("testa funktioner", false)];
+    document.body.innerHTML = `<ul id="todos" class="todo"><li id="list-item"></li></ul>`;
+
+    //Act
+    functions.createHtml(todos);
+
+    //Assert
+    // expect(document.getElementById("todos")?.innerHTML).toBe(
+    //   "testa funktioner"
+    // );
+    // expect(document.getElementById("todos") as HTMLUListElement.innerHTML).toBe("testa funktioner");
+    expect(document.getElementById("list-item")?.innerHTML).toBe(
+      "testa funktioner"
+    );
+  });
+
+  /********************** */
+
+  test("should add class 'todo__text--done' to li", () => {
+    //Arrange
+    let todos: Todo[] = [new Todo("testa funktioner", true)];
+    document.body.innerHTML = `<ul id="todos" class="todo"><</ul>`;
+    let todosContainer: HTMLUListElement = document.getElementById(
+      "todos"
+    ) as HTMLUListElement;
+
+    //Act
+    functions.createHtml(todos);
+    console.log(document.querySelector("li")?.className);
+
+    //Assert
+    expect(todosContainer.innerHTML).toBe(
+      `<li class="todo__text--done>testa funktioner</li>`
+    );
+  });
+});
+
+test("should call function 'createNewTodo' on click", () => {
+  //Arrange
+  let spy = jest.spyOn(functions, "createNewTodo").mockReturnValue();
+  document.body.innerHTML = `<form id="newTodoForm"> 
+  <input type="text" id="newTodoText"/>
+  <button id="create-btn">Skapa</button>
+   </form>`;
+
+  //Act
+  functions.init();
+  document.getElementById("create-btn")?.click();
+
+  //Assert
+  expect(spy).toHaveBeenCalled();
+  expect(spy).toHaveBeenCalledTimes(1);
+});
+
+describe("init", () => {
+  test("should call function 'clearTodos' on click", () => {
+    //Arrange
+    let spy = jest.spyOn(functions, "clearTodos").mockReturnValue();
+    document.body.innerHTML = `<button type="button" id="clearTodos">Rensa lista<button>`;
+    functions.init();
+
+    //Act
+    document.getElementById("clearTodos")?.click();
+
+    //Assert
+    expect(spy).toHaveBeenCalled();
   });
 });
