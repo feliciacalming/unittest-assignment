@@ -67,7 +67,6 @@ describe("createNewTodo", () => {
     let spy = jest.spyOn(functions, "createHtml").mockReturnValue();
     let todos: Todo[] = [];
     let todoText: string = "testa";
-    // addTodo(todoText, todos);
 
     //Act
     functions.createNewTodo(todoText, todos);
@@ -81,7 +80,6 @@ describe("createNewTodo", () => {
     let spy = jest.spyOn(functions, "displayError").mockReturnValue();
     let todos: Todo[] = [];
     let todoText: string = "te";
-    addTodo(todoText, todos);
 
     //Act
     functions.createNewTodo(todoText, todos);

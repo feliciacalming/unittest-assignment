@@ -10,7 +10,7 @@ describe("changeTodo", () => {
     //Act
     changeTodo(todo);
 
-    //Arrest
+    //Assert
     expect(todo.done).toBe(!false);
     expect(todo.done).toBe(true);
   });
@@ -23,7 +23,7 @@ describe("changeTodo", () => {
     changeTodo(todo);
     // console.log(todo);
 
-    //Arrest
+    //Assert
     expect(todo.done).toBe(!true);
     expect(todo.done).toBe(false);
   });
