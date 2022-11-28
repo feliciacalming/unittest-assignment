@@ -22,16 +22,16 @@ export function init() {
     }
   );
 
-  document.getElementById("sortButton")?.addEventListener("click", () => {
-    sortTodos(todos);
-  });
+  // //min knapp för att sortera efter 'done'
+  // document.getElementById("sortButton")?.addEventListener("click", () => {
+  //   sortTodos(todos);
+  // });
 }
 
 export function createNewTodo(todoText: string, todos: Todo[]) {
   let result = addTodo(todoText, todos);
 
   if (result.success) {
-    sortTodos(todos);
     exports.createHtml(todos);
   } else {
     exports.displayError(result.error, true);
@@ -61,8 +61,8 @@ export function createHtml(todos: Todo[]) {
     });
 
     todosContainer.appendChild(li);
-    // sortTodos(todos);
   }
+  // sortTodos(todos);
 }
 
 export function toggleTodo(todo: Todo) {
@@ -89,24 +89,22 @@ export function clearTodos(todos: Todo[]) {
   exports.createHtml(todos);
 }
 
-export function sortTodos(todos: Todo[]) {
-  console.log("hejhej");
-  for (let i = 0; i < todos.length; i++) {
-    if (todos[i].done === true) {
-      let newTodo = new Todo(todos[i].text, true);
-      let doneTodo = todos.splice(i, 1);
-      todos.push(newTodo);
-      createHtml(todos);
-      //       console.log(todos);
-      //       return todos;
-      //       todos.push(newTodo);
-      //       console.log(todos);
-      //       // console.log("Ny todo", newTodo.text);
-      //       createHtml(todos);
-      //       // console.log("test igen", todos);
-    }
-  }
-}
+//försökte få till en sort-funktion men hann inte hela vägen :)
+// export function sortTodos(todos: Todo[]) {
+//   console.log("hejhej");
+//   for (let i = 0; i < todos.length; i++) {
+//     if (todos[i].done) {
+//       let newTodo = new Todo(todos[i].text, true);
+//       todos.splice(i, 1);
+//       todos.splice(todos.length - 1, 0, newTodo);
+//       // createHtml(todos);
+//       console.log(todos);
+//       // todos.push(newTodo);
+//       // let doneTodo = todos[i];
+//       // todos.splice(todos.length, 0, new Todo("testa", false));
+//     }
+//   }
+// }
 
 init();
 
